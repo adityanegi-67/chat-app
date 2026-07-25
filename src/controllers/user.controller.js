@@ -34,3 +34,7 @@ const setUsername = asyncHandler(async (req, res) => {
             )
         )
 })
+
+export {
+    setUsername
+}

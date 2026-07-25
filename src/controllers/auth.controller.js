@@ -31,9 +31,9 @@ const googleLogin = asyncHandler(async (req, res) => {
         if(!user){
             user = await User.create({
                googleId: payLoad.sub,
-            email: payLoad.email,
-            avatar: payLoad.picture
-        })
+               email: payLoad.email,
+               avatar: payLoad.picture
+            })
         }
 
         //3. issue my own app jwt
@@ -60,4 +60,6 @@ const googleLogin = asyncHandler(async (req, res) => {
         
 })
 
-export {googleLogin}
+export {
+    googleLogin
+}
