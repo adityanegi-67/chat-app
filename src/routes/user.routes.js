@@ -5,6 +5,6 @@ import { verifyJwt } from '../middlewares/auth.middleware.js'
 const router = Router()
 
 router.route("/username").patch(verifyJwt, setUsername)
-router.route("/users").patch(verifyJwt, getAllUsers)
+router.route("/").get(verifyJwt, getAllUsers)
 
 export default router
