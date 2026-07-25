@@ -35,6 +35,24 @@ const setUsername = asyncHandler(async (req, res) => {
         )
 })
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({
+        _id: {$ne: req.user.id},
+        username: {$ne: null},
+    }).select("username avatar")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                users,
+                "All users fetched successfully."
+            )
+        )
+})
+
 export {
-    setUsername
+    setUsername,
+    getAllUsers
 }
