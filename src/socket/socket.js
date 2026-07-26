@@ -1,8 +1,9 @@
 import { Server } from "socket.io"
 import jwt from 'jsonwebtoken'
 import { User } from "../models/user.model.js"
+import {Message} from "../models/message.model.js"
 
-const userSocketMap = {}
+const userSocketMap = {} //{userId : socketId}
 
 const initSocket = (server) => {
     const io = new Server(server, {
@@ -35,6 +36,28 @@ const initSocket = (server) => {
     io.on('connection', (socket) => {
         console.log("Socket connected : ", socket.id, "user : ", socket.username)
         userSocketMap[socket.user._id] = socket.id
+
+        socket.on("sendMessage", async({receiverId, content}) => {
+            try{
+                const message = await Message.create({
+                    sender: socket.user._id,
+                    receiver: receiverId,
+                    content
+                })
+
+                //always send back to the sender, so their own UI updates
+                socket.emit("receiveMessage", message)
+
+                //push to receiver if they are online
+                const receiverSocketId = userSocketMap[receiverId]
+                if(receiverSocketId){
+                    io.to(receiverSocketId).emit("receiveMessage", message)
+                }
+            }
+            catch(err){
+                socket.emit("messageError", {message: "Failed to send the message."})
+            }
+        })
 
         socket.on('disconnect', () => {
             console.log("Socket disconnected : ", socket.id)
